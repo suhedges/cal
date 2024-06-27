@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Widget</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="calculators">
+        <div class="calculator" id="vbelt-calculator">
+            <div class="overlay" id="vbelt-overlay">
+                <div class="overlay-content">
+                    <h2>V-Belt Length Calculator</h2>
+                    <p>Please note that these calculations are for general guidance only. Accurate dimensional values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
+                    <button onclick="closeOverlay('vbelt-overlay')">OK</button>
+                </div>
+            </div>
+            <h2>V-Belt Length Calculator</h2>
+            <label for="d1">Diameter of Drive Pulley in Inches (D1):</label>
+            <input type="number" id="d1" required>
+            <label for="d2">Diameter of Driven Pulley in Inches (D2):</label>
+            <input type="number" id="d2" required>
+            <label for="cd">Center Distance (distance from center of one pulley to the other):</label>
+            <input type="number" id="cd" required>
+            <label for="vbelt-result">Result</label>
+            <input type="text" id="vbelt-result" readonly>
+            <button onclick="calculateVbeltLength()">Calculate</button>
+        </div>
+
+        <div class="calculator" id="pulley-calculator">
+            <div class="overlay" id="pulley-overlay">
+                <div class="overlay-content">
+                    <h2>Pulley Size Calculator</h2>
+                    <p>Please note that these calculations are for general guidance only. Accurate dimensional values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
+                    <button onclick="closeOverlay('pulley-overlay')">OK</button>
+                </div>
+            </div>
+            <h2>Pulley Size Calculator</h2>
+            <label for="drive-rpm">Drive Pulley RPM:</label>
+            <input type="number" id="drive-rpm" required>
+            <label for="output-rpm">Desired Output RPM:</label>
+            <input type="number" id="output-rpm" required>
+            <label for="drive-diameter">Drive Pulley Diameter (leave blank to calculate):</label>
+            <input type="number" id="drive-diameter">
+            <label for="driven-diameter">Driven Pulley Diameter (leave blank to calculate):</label>
+            <input type="number" id="driven-diameter">
+            <button onclick="calculatePulleySize()">Calculate</button>
+        </div>
+
+        <div class="calculator" id="sprocket-calculator">
+            <div class="overlay" id="sprocket-overlay">
+                <div class="overlay-content">
+                    <h2>Sprocket Size Calculator</h2>
+                    <p>Please note that these calculations are for general guidance only. Accurate dimensional values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
+                    <button onclick="closeOverlay('sprocket-overlay')">OK</button>
+                </div>
+            </div>
+            <h2>Sprocket Size Calculator</h2>
+            <label for="drive-sprocket-rpm">Drive Sprocket RPM:</label>
+            <input type="number" id="drive-sprocket-rpm" required>
+            <label for="output-sprocket-rpm">Desired Output RPM:</label>
+            <input type="number" id="output-sprocket-rpm" required>
+            <label for="drive-sprocket-teeth">Drive Sprocket Teeth (leave blank to calculate):</label>
+            <input type="number" id="drive-sprocket-teeth">
+            <label for="driven-sprocket-teeth">Driven Sprocket Teeth (leave blank to calculate):</label>
+            <input type="number" id="driven-sprocket-teeth">
+            <button onclick="calculateSprocketSize()">Calculate</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
