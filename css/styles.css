@@ -1,14 +1,11 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 0; 
-    padding: 0; 
 }
 
 .calculators {
     display: flex;
-    justify-content: space-around;
-    margin: 0;
-    padding: 0 0 10px 0; /* Add padding to the bottom */
+    justify-content: center; /* Adjusted to align calculators to the start */
+    gap: 20px; /* Added to control spacing between calculators */
 }
 
 .calculator {
@@ -17,7 +14,7 @@ body {
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    margin: 10px 10px 0 10px;
+    margin: 10px 5px; /* Reduced horizontal margin */
     background-color: #fff;
 }
 
