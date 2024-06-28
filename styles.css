@@ -2,25 +2,29 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Start from the top */
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
-    background-color: #FFFFFF !important;
+    padding-top: 1px; /* 1px padding at the top of the page */
+    background-color: #FFFFFF;
 }
 
 .calculators {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
+    justify-content: center; /* Center the calculators horizontally */
+    gap: 20px; /* 20px spacing between calculators */
+    padding: 0 20px; /* Horizontal padding of 20px */
+    width: 100%; /* Ensure it takes full width */
+    box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .calculators.bottom-row {
     display: flex;
-    justify-content: center;
-    width: 100%;
+    justify-content: center; /* Center the calculators horizontally */
+    width: 100%; /* Ensure it takes full width */
+    margin-top: 20px; /* 20px vertical spacing to the next row */
 }
 
 .calculator {
