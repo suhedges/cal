@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrated Calculators</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="calculators">
+        <!-- V-Belt Length Calculator -->
+        <div class="calculator" id="vbelt-calculator">
+            <div class="overlay" id="vbelt-overlay">
+                <div class="overlay-content">
+                    <h2>V-Belt Length Calculator</h2>
+                    <p>Please note that these calculations are for general guidance only. Accurate dimensional values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
+                    <button onclick="closeOverlay('vbelt-overlay')">OK</button>
+                </div>
+            </div>
+            <h2>V-Belt Length Calculator</h2>
+            <label for="d1">Diameter of Drive Pulley in Inches (D1):</label>
+            <input type="number" id="d1" required>
+            <label for="d2">Diameter of Driven Pulley in Inches (D2):</label>
+            <input type="number" id="d2" required>
+            <label for="cd">Center Distance (distance from center of one pulley to the other):</label>
+            <input type="number" id="cd" required>
+            <label for="vbelt-result">Result</label>
+            <input type="text" id="vbelt-result" readonly>
+            <button onclick="calculateVbeltLength()">Calculate</button>
+        </div>
+
+        <!-- Pulley Size Calculator -->
+        <div class="calculator" id="pulley-calculator">
+            <div class="overlay" id="pulley-overlay">
+                <div class="overlay-content">
+                    <h2>Pulley Size Calculator</h2>
+                    <p>Please note that these calculations are for general guidance only. Accurate dimensional values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
+                    <button onclick="closeOverlay('pulley-overlay')">OK</button>
+                </div>
+            </div>
+            <h2>Pulley Size Calculator</h2>
+            <label for="drive-rpm">Drive Pulley RPM:</label>
+            <input type="number" id="drive-rpm" required>
+            <label for="output-rpm">Desired Output RPM:</label>
+            <input type="number" id="output-rpm" required>
+            <label for="drive-diameter">Drive Pulley Diameter (leave blank to calculate):</label>
+            <input type="number" id="drive-diameter">
+            <label for="driven-diameter">Driven Pulley Diameter (leave blank to calculate):</label>
+            <input type="number" id="driven-diameter">
+            <button onclick="calculatePulleySize()">Calculate</button>
+        </div>
+
+        <!-- Sprocket Size Calculator -->
+        <div class="calculator" id="sprocket-calculator">
+            <div class="overlay" id="sprocket-overlay">
+                <div class="overlay-content">
+                    <h2>Sprocket Size Calculator</h2>
+                    <p>Please note that these calculations are for general guidance only. Accurate dimensional values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
+                    <button onclick="closeOverlay('sprocket-overlay')">OK</button>
+                </div>
+            </div>
+            <h2>Sprocket Size Calculator</h2>
+            <label for="drive-sprocket-rpm">Drive Sprocket RPM:</label>
+            <input type="number" id="drive-sprocket-rpm" required>
+            <label for="output-sprocket-rpm">Desired Output RPM:</label>
+            <input type="number" id="output-sprocket-rpm" required>
+            <label for="drive-sprocket-teeth">Drive Sprocket Teeth (leave blank to calculate):</label>
+            <input type="number" id="drive-sprocket-teeth">
+            <label for="driven-sprocket-teeth">Driven Sprocket Teeth (leave blank to calculate):</label>
+            <input type="number" id="driven-sprocket-teeth">
+            <button onclick="calculateSprocketSize()">Calculate</button>
+        </div>
+    </div>
+
+    <div class="calculators bottom-row">
+        <!-- Inches to Millimeters Converter -->
+        <div class="calculator" id="converter1">
+            <h2>Inches to Millimeters Converter</h2>
+            <div class="unit-container">
+                <input type="text" id="inchValue" placeholder="Enter value">
+                <span>in</span>
+            </div>
+            <div class="unit-container">
+                <input type="text" id="mmValue" placeholder="Result">
+                <span>mm</span>
+            </div>
+        </div>
+        
+        <!-- Newton Meters to Foot Pounds Converter -->
+        <div class="calculator" id="converter2">
+            <h2>Newton Meters to Foot Pounds Converter</h2>
+            <div class="unit-container">
+                <input type="text" id="nmValue" placeholder="Enter value">
+                <span>Nm</span>
+            </div>
+            <div class="unit-container">
+                <input type="text" id="fpValue" placeholder="Enter value">
+                <span>ft-lbs</span>
+            </div>
+        </div>
+        
+        <!-- Torque Calculator -->
+        <div class="calculator" id="torqueCalculator">
+            <h2>Torque Calculator</h2>
+            <div class="radio-container">
+                <label>
+                    Belt Drive
+                    <input type="radio" name="driveType" value="belt" checked>
+                </label>
+                <label>
+                    Chain Drive
+                    <input type="radio" name="driveType" value="chain">
+                </label>
+            </div>
+            <div class="unit-container">
+                <input type="text" id="loadTorque" placeholder="Load Torque (Nm)">
+            </div>
+            <div class="unit-container">
+                <input type="text" id="netTorque" placeholder="Net Torque (Nm)">
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Inches to Millimeters Converter
+        document.getElementById("inchValue").addEventListener("input", () => {
+            convertInchToMm(true);
+        });
+        document.getElementById("mmValue").addEventListener("input", () => {
+            convertInchToMm(false);
+        });
+
+        function convertInchToMm(isInch) {
+            let inchField = document.getElementById("inchValue");
+            let mmField = document.getElementById("mmValue");
+            let inch = parseFloat(inchField.value) || 0;
+            let mm = parseFloat(mmField.value) || 0;
+
+            if (isInch) {
+                if (inch) mmField.value = (inch * 25.4).toFixed(2);
+                else mmField.value = '';
+            } else {
+                if (mm) inchField.value = (mm / 25.4).toFixed(2);
+                else inchField.value = '';
+            }
+        }
+
+        // Newton Meters to Foot Pounds Converter
+        document.getElementById("nmValue").addEventListener("input", () => {
+            convertNmToFp(true);
+        });
+        document.getElementById("fpValue").addEventListener("input", () => {
+            convertNmToFp(false);
+        });
+
+        function convertNmToFp(isNm) {
+            let nmField = document.getElementById("nmValue");
+            let fpField = document.getElementById("fpValue");
+            let nm = parseFloat(nmField.value) || 0;
+            let fp = parseFloat(fpField.value) || 0;
+
+            if (isNm) {
+                if (nm) fpField.value = (nm * 0.73756).toFixed(2);
+                else fpField.value = '';
+            } else {
+                if (fp) nmField.value = (fp / 0.73756).toFixed(2);
+                else nmField.value = '';
+            }
+        }
+
+        // Torque Calculator
+        document.querySelectorAll('input[name="driveType"]').forEach((elem) => {
+            elem.addEventListener("change", resetTorqueCalculator);
+        });
+        document.getElementById("loadTorque").addEventListener("input", calculateTorque);
+        document.getElementById("netTorque").addEventListener("input", calculateTorqueReverse);
+
+        function resetTorqueCalculator() {
+            document.getElementById("loadTorque").value = '';
+            document.getElementById("netTorque").value = '';
+        }
+
+        function calculateTorque() {
+            let loadTorque = parseFloat(document.getElementById("loadTorque").value) || 0;
+            let netTorqueField = document.getElementById("netTorque");
+            let driveType = document.querySelector('input[name="driveType"]:checked').value;
+
+            if (loadTorque) {
+                let netTorque;
+                if (driveType === "belt") {
+                    netTorque = loadTorque * 1.1; // Example calculation for belt
+                } else {
+                    netTorque = loadTorque * 1.2; // Example calculation for chain
+                }
+                netTorqueField.value = netTorque.toFixed(2);
+            } else {
+                netTorqueField.value = '';
+            }
+        }
+
+        function calculateTorqueReverse() {
+            let netTorque = parseFloat(document.getElementById("netTorque").value) || 0;
+            let loadTorqueField = document.getElementById("loadTorque");
+            let driveType = document.querySelector('input[name="driveType"]:checked').value;
+
+            if (netTorque) {
+                let loadTorque;
+                if (driveType === "belt") {
+                    loadTorque = netTorque / 1.1; // Example reverse calculation for belt
+                } else {
+                    loadTorque = netTorque / 1.2; // Example reverse calculation for chain
+                }
+                loadTorqueField.value = loadTorque.toFixed(2);
+            } else {
+                loadTorqueField.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
