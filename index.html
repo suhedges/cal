@@ -75,6 +75,13 @@
     <div class="calculators bottom-row">
         <!-- Inches to Millimeters Converter -->
         <div class="calculator" id="converter1">
+            <div class="overlay" id="converter1-overlay">
+                <div class="overlay-content">
+                    <h2>Inches to Millimeters Converter</h2>
+                    <p>Please note that these calculations are for general guidance only. Accurate values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
+                    <button onclick="closeOverlay('converter1-overlay')">OK</button>
+                </div>
+            </div>
             <h2>Inches to Millimeters Converter</h2>
             <div class="unit-container">
                 <input type="text" id="inchValue" placeholder="Enter value">
@@ -88,6 +95,13 @@
         
         <!-- Newton Meters to Foot Pounds Converter -->
         <div class="calculator" id="converter2">
+            <div class="overlay" id="converter2-overlay">
+                <div class="overlay-content">
+                    <h2>Newton Meters to Foot Pounds Converter</h2>
+                    <p>Please note that these calculations are for general guidance only. Accurate values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
+                    <button onclick="closeOverlay('converter2-overlay')">OK</button>
+                </div>
+            </div>
             <h2>Newton Meters to Foot Pounds Converter</h2>
             <div class="unit-container">
                 <input type="text" id="nmValue" placeholder="Enter value">
@@ -101,6 +115,13 @@
         
         <!-- Torque Calculator -->
         <div class="calculator" id="torqueCalculator">
+            <div class="overlay" id="torqueCalculator-overlay">
+                <div class="overlay-content">
+                    <h2>Torque Calculator</h2>
+                    <p>Please note that these calculations are for general guidance only. Accurate values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
+                    <button onclick="closeOverlay('torqueCalculator-overlay')">OK</button>
+                </div>
+            </div>
             <h2>Torque Calculator</h2>
             <div class="radio-container">
                 <label>
@@ -122,100 +143,5 @@
     </div>
 
     <script src="script.js"></script>
-    <script>
-        // Inches to Millimeters Converter
-        document.getElementById("inchValue").addEventListener("input", () => {
-            convertInchToMm(true);
-        });
-        document.getElementById("mmValue").addEventListener("input", () => {
-            convertInchToMm(false);
-        });
-
-        function convertInchToMm(isInch) {
-            let inchField = document.getElementById("inchValue");
-            let mmField = document.getElementById("mmValue");
-            let inch = parseFloat(inchField.value) || 0;
-            let mm = parseFloat(mmField.value) || 0;
-
-            if (isInch) {
-                if (inch) mmField.value = (inch * 25.4).toFixed(2);
-                else mmField.value = '';
-            } else {
-                if (mm) inchField.value = (mm / 25.4).toFixed(2);
-                else inchField.value = '';
-            }
-        }
-
-        // Newton Meters to Foot Pounds Converter
-        document.getElementById("nmValue").addEventListener("input", () => {
-            convertNmToFp(true);
-        });
-        document.getElementById("fpValue").addEventListener("input", () => {
-            convertNmToFp(false);
-        });
-
-        function convertNmToFp(isNm) {
-            let nmField = document.getElementById("nmValue");
-            let fpField = document.getElementById("fpValue");
-            let nm = parseFloat(nmField.value) || 0;
-            let fp = parseFloat(fpField.value) || 0;
-
-            if (isNm) {
-                if (nm) fpField.value = (nm * 0.73756).toFixed(2);
-                else fpField.value = '';
-            } else {
-                if (fp) nmField.value = (fp / 0.73756).toFixed(2);
-                else nmField.value = '';
-            }
-        }
-
-        // Torque Calculator
-        document.querySelectorAll('input[name="driveType"]').forEach((elem) => {
-            elem.addEventListener("change", resetTorqueCalculator);
-        });
-        document.getElementById("loadTorque").addEventListener("input", calculateTorque);
-        document.getElementById("netTorque").addEventListener("input", calculateTorqueReverse);
-
-        function resetTorqueCalculator() {
-            document.getElementById("loadTorque").value = '';
-            document.getElementById("netTorque").value = '';
-        }
-
-        function calculateTorque() {
-            let loadTorque = parseFloat(document.getElementById("loadTorque").value) || 0;
-            let netTorqueField = document.getElementById("netTorque");
-            let driveType = document.querySelector('input[name="driveType"]:checked').value;
-
-            if (loadTorque) {
-                let netTorque;
-                if (driveType === "belt") {
-                    netTorque = loadTorque * 1.1; // Example calculation for belt
-                } else {
-                    netTorque = loadTorque * 1.2; // Example calculation for chain
-                }
-                netTorqueField.value = netTorque.toFixed(2);
-            } else {
-                netTorqueField.value = '';
-            }
-        }
-
-        function calculateTorqueReverse() {
-            let netTorque = parseFloat(document.getElementById("netTorque").value) || 0;
-            let loadTorqueField = document.getElementById("loadTorque");
-            let driveType = document.querySelector('input[name="driveType"]:checked').value;
-
-            if (netTorque) {
-                let loadTorque;
-                if (driveType === "belt") {
-                    loadTorque = netTorque / 1.1; // Example reverse calculation for belt
-                } else {
-                    loadTorque = netTorque / 1.2; // Example reverse calculation for chain
-                }
-                loadTorqueField.value = loadTorque.toFixed(2);
-            } else {
-                loadTorqueField.value = '';
-            }
-        }
-    </script>
 </body>
 </html>
