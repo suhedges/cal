@@ -5,15 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Integrated Calculators</title>
     <link rel="stylesheet" href="styles.css">
-    <script>
-        function sendHeight() {
-            var height = document.documentElement.scrollHeight;
-            window.parent.postMessage(height, "*");
-        }
-
-        window.addEventListener('load', sendHeight);
-        window.addEventListener('resize', sendHeight);
-    </script>
 </head>
 <body>
     <div class="calculators">
@@ -152,47 +143,5 @@
     </div>
 
     <script src="script.js"></script>
-    <script>
-        function sendHeight() {
-            var height = document.documentElement.scrollHeight;
-            window.parent.postMessage(height, "*");
-        }
-
-        window.addEventListenerHere is the updated `index.html` with the integrated script to dynamically resize the iframe when embedded:
-
-### Parent HTML (the page where you want to embed the calculators):
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Embed Calculators</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
-        .calculator-embed {
-            width: 100%;
-            border: none;
-        }
-    </style>
-</head>
-<body>
-    <iframe class="calculator-embed" id="calculatorFrame" src="https://suhedges.github.io/cal/" onload="resizeIframe(this)"></iframe>
-    <script>
-        function resizeIframe(obj) {
-            obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
-        }
-
-        window.addEventListener('message', function(event) {
-            if (event.origin === "https://suhedges.github.io") {
-                resizeIframe(event.data);
-            }
-        });
-    </script>
 </body>
 </html>
