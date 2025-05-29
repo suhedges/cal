@@ -5,17 +5,22 @@ function closeOverlay(id) {
 
 // V-Belt Length Calculator function
 function calculateVbeltLength() {
-    const d1 = parseFloat(document.getElementById('d1').value);
-    const d2 = parseFloat(document.getElementById('d2').value);
-    const cd = parseFloat(document.getElementById('cd').value);
-    const resultField = document.getElementById('vbelt-result');
-    
-    if (d1 && d2 && cd) {
-        const vbeltLength = (2 * cd) + ((d2 - d1) / 2) + ((d1 + d2) / 4);
-        resultField.value = vbeltLength.toFixed(2);
-    } else {
-        resultField.value = 'Invalid input';
-    }
+  const d1 = parseFloat(document.getElementById('d1').value); // small pulley
+  const d2 = parseFloat(document.getElementById('d2').value); // large pulley
+  const C  = parseFloat(document.getElementById('cd').value); // center distance
+  const resultField = document.getElementById('vbelt-result');
+
+  if (d1 && d2 && C) {
+    // Standard V‐belt length formula:
+    const L = 
+      2 * C
+      + (Math.PI / 2) * (d1 + d2)
+      + Math.pow(d2 - d1, 2) / (4 * C);
+
+    resultField.value = L.toFixed(2);
+  } else {
+    resultField.value = 'Invalid input';
+  }
 }
 
 // Pulley Size Calculator function
