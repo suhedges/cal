@@ -814,6 +814,7 @@
 (function () {
   "use strict";
 
+  const FIXED_WIDGET_HEIGHT = 450;
   const allowedParentOrigins = [
     "https://www.tristate-bearing.com",
     "https://tristate-bearing.com"
@@ -821,27 +822,12 @@
 
   let resizeTimer = null;
 
-  function getDocumentHeight() {
-    const body = document.body;
-    const html = document.documentElement;
-
-    return Math.max(
-      body ? body.scrollHeight : 0,
-      body ? body.offsetHeight : 0,
-      html ? html.clientHeight : 0,
-      html ? html.scrollHeight : 0,
-      html ? html.offsetHeight : 0
-    );
-  }
-
   function postHeight() {
-    const height = getDocumentHeight();
-
     allowedParentOrigins.forEach(function (origin) {
       window.parent.postMessage(
         {
           type: "tsb-calculators-height",
-          height: height
+          height: FIXED_WIDGET_HEIGHT
         },
         origin
       );
@@ -870,16 +856,6 @@
       postHeight();
     }
   });
-
-  if ("ResizeObserver" in window) {
-    const observer = new ResizeObserver(schedulePostHeight);
-
-    observer.observe(document.documentElement);
-
-    if (document.body) {
-      observer.observe(document.body);
-    }
-  }
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", schedulePostHeight);

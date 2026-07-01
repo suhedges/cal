@@ -82,12 +82,12 @@
     <header class="widget-header">
       <h1 id="calculator-widget-title">Engineering Calculators</h1>
       <p class="widget-description">
-        Choose the calculator you need, enter a few values, and keep the page compact without scrolling through every tool at once.
+        Choose one compact calculator at a time. The selector stays available without making the page taller.
       </p>
       <div class="widget-disclaimer" id="calculator-disclaimer" role="note" aria-live="polite">
         <div>
           <strong>Disclaimer:</strong>
-          These calculators are for general guidance only. Accurate dimensions and application details are essential. Verify all results against manufacturer specifications, safety factors, and application requirements before use. Click OK to enable the calculators.
+          These calculators are for general guidance only. Verify results against manufacturer specifications, safety factors, and application requirements before use. Click OK to enable the calculators.
         </div>
         <button class="tsb-button disclaimer-button" type="button" id="calculator-disclaimer-ok">OK</button>
       </div>
@@ -100,8 +100,8 @@
         <section class="calculator-selector" aria-labelledby="calculator-selector-title">
           <div class="calculator-selector-header">
             <div>
-              <h2 id="calculator-selector-title">What do you need to calculate?</h2>
-              <p>Select a tool below. The chosen calculator will open to the right, and this selector will collapse into a compact sidebar.</p>
+              <h2 id="calculator-selector-title">Choose a calculator</h2>
+              <p>Pick one tool. The selected calculator opens beside this menu.</p>
             </div>
           </div>
 
@@ -110,7 +110,7 @@
               <span class="selector-icon" aria-hidden="true">V</span>
               <span class="selector-text">
                 <strong>V-Belt Length</strong>
-                <small>Pulley diameters + center distance</small>
+                <small>Open belt pitch length</small>
               </span>
             </button>
 
@@ -118,7 +118,7 @@
               <span class="selector-icon" aria-hidden="true">P</span>
               <span class="selector-text">
                 <strong>Pulley Size</strong>
-                <small>Find missing pulley diameter</small>
+                <small>Drive and driven pulley ratio</small>
               </span>
             </button>
 
@@ -126,7 +126,7 @@
               <span class="selector-icon" aria-hidden="true">S</span>
               <span class="selector-text">
                 <strong>Sprocket Size</strong>
-                <small>Find missing tooth count</small>
+                <small>Chain speed and tooth count</small>
               </span>
             </button>
 
@@ -134,7 +134,7 @@
               <span class="selector-icon" aria-hidden="true">IN</span>
               <span class="selector-text">
                 <strong>Inches / Millimeters</strong>
-                <small>Convert in and mm</small>
+                <small>Linear measurement conversion</small>
               </span>
             </button>
 
@@ -142,7 +142,7 @@
               <span class="selector-icon" aria-hidden="true">TQ</span>
               <span class="selector-text">
                 <strong>Nm / Ft-Lbs</strong>
-                <small>Convert torque units</small>
+                <small>Nm and ft-lbs conversion</small>
               </span>
             </button>
 
@@ -150,7 +150,7 @@
               <span class="selector-icon" aria-hidden="true">HP</span>
               <span class="selector-text">
                 <strong>Torque</strong>
-                <small>HP + RPM + service factor</small>
+                <small>Horsepower and RPM torque</small>
               </span>
             </button>
           </div>
@@ -244,7 +244,7 @@
           </div>
         </article>
 
-        <article class="calculator-card" id="converter1" role="region" aria-labelledby="tab-converter1" tabindex="0" data-calculator-panel hidden>
+        <article class="calculator-card converter-card" id="converter1" role="region" aria-labelledby="tab-converter1" tabindex="0" data-calculator-panel hidden>
           <div class="calculator-heading">
             <span class="calculator-icon" aria-hidden="true">IN</span>
             <div>
@@ -253,23 +253,31 @@
             </div>
           </div>
 
-          <div class="form-stack">
-            <label for="inchValue">Inches</label>
-            <div class="unit-row">
-              <input type="number" id="inchValue" inputmode="decimal" step="any" placeholder="Enter value" autocomplete="off" />
-              <span>in</span>
+          <div class="converter-stack">
+            <div class="converter-field">
+              <label for="inchValue">Inches</label>
+              <div class="unit-row">
+                <input type="number" id="inchValue" inputmode="decimal" step="any" placeholder="Enter inches" autocomplete="off" />
+                <span>in</span>
+              </div>
             </div>
 
-            <label for="mmValue">Millimeters</label>
-            <div class="unit-row">
-              <input type="number" id="mmValue" inputmode="decimal" step="any" placeholder="Result" autocomplete="off" />
-              <span>mm</span>
+            <div class="converter-swap" aria-hidden="true">&harr;</div>
+
+            <div class="converter-field">
+              <label for="mmValue">Millimeters</label>
+              <div class="unit-row">
+                <input type="number" id="mmValue" inputmode="decimal" step="any" placeholder="Enter mm" autocomplete="off" />
+                <span>mm</span>
+              </div>
             </div>
-            <p class="form-message" id="inch-mm-message" aria-live="polite"></p>
+
+            <p class="converter-helper">Type in either field to convert instantly.</p>
+            <p class="form-message converter-message" id="inch-mm-message" aria-live="polite"></p>
           </div>
         </article>
 
-        <article class="calculator-card" id="converter2" role="region" aria-labelledby="tab-converter2" tabindex="0" data-calculator-panel hidden>
+        <article class="calculator-card converter-card" id="converter2" role="region" aria-labelledby="tab-converter2" tabindex="0" data-calculator-panel hidden>
           <div class="calculator-heading">
             <span class="calculator-icon" aria-hidden="true">TQ</span>
             <div>
@@ -278,19 +286,27 @@
             </div>
           </div>
 
-          <div class="form-stack">
-            <label for="nmValue">Newton meters</label>
-            <div class="unit-row">
-              <input type="number" id="nmValue" inputmode="decimal" step="any" placeholder="Enter value" autocomplete="off" />
-              <span>Nm</span>
+          <div class="converter-stack">
+            <div class="converter-field">
+              <label for="nmValue">Newton meters</label>
+              <div class="unit-row">
+                <input type="number" id="nmValue" inputmode="decimal" step="any" placeholder="Enter Nm" autocomplete="off" />
+                <span>Nm</span>
+              </div>
             </div>
 
-            <label for="fpValue">Foot-pounds</label>
-            <div class="unit-row">
-              <input type="number" id="fpValue" inputmode="decimal" step="any" placeholder="Result" autocomplete="off" />
-              <span>ft-lbs</span>
+            <div class="converter-swap" aria-hidden="true">&harr;</div>
+
+            <div class="converter-field">
+              <label for="fpValue">Foot-pounds</label>
+              <div class="unit-row">
+                <input type="number" id="fpValue" inputmode="decimal" step="any" placeholder="Enter ft-lbs" autocomplete="off" />
+                <span>ft-lbs</span>
+              </div>
             </div>
-            <p class="form-message" id="nm-ft-message" aria-live="polite"></p>
+
+            <p class="converter-helper">Type in either field to convert instantly.</p>
+            <p class="form-message converter-message" id="nm-ft-message" aria-live="polite"></p>
           </div>
         </article>
 
