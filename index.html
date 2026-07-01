@@ -1,147 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integrated Calculators</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="robots" content="index, follow" />
+  <meta name="description" content="Tri-State Bearing engineering calculators for open V-belt pitch length, pulley ratio, sprocket ratio, horsepower and RPM torque estimates, inches to millimeters, and Newton meters to foot-pounds conversions." />
+  <meta name="theme-color" content="#053856" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Engineering Calculators | Tri-State Bearing" />
+  <meta property="og:description" content="Use quick industrial calculators for belt length, pulley size, sprocket size, horsepower and RPM torque, and common unit conversions." />
+  <meta property="og:site_name" content="Tri-State Bearing" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Engineering Calculators | Tri-State Bearing" />
+  <meta name="twitter:description" content="Quick power transmission, torque, and unit conversion calculators from Tri-State Bearing." />
+  <link rel="canonical" href="https://www.tristate-bearing.com/calculators" />
+
+  <title>Engineering Calculators | Tri-State Bearing</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Engineering Calculators",
+    "description": "Tri-State Bearing engineering calculators for open V-belt pitch length, pulley size, sprocket size, horsepower and RPM torque estimates, and unit conversions.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Tri-State Bearing Company, Inc.",
+      "url": "https://www.tristate-bearing.com/"
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Industrial calculator tools",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "V-Belt Length Calculator",
+          "description": "Estimate approximate open-belt pitch length from pulley pitch diameters and center distance."
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Pulley Size Calculator",
+          "description": "Estimate drive or driven pulley diameter from RPM and a known pulley diameter."
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Sprocket Size Calculator",
+          "description": "Estimate drive or driven sprocket teeth from RPM and a known sprocket tooth count."
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Inches to Millimeters Converter",
+          "description": "Convert inch measurements to millimeters and millimeters to inches."
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Newton Meters to Foot-Pounds Converter",
+          "description": "Convert torque values between Newton meters and foot-pounds."
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "Torque Calculator",
+          "description": "Calculate running and design torque from horsepower, RPM, and an optional service factor."
+        }
+      ]
+    }
+  }
+  </script>
 </head>
 <body>
-    <div class="calculators">
-        <!-- V-Belt Length Calculator -->
-        <div class="calculator" id="vbelt-calculator">
-            <div class="overlay" id="vbelt-overlay">
-                <div class="overlay-content">
-                    <h2>V-Belt Length Calculator</h2>
-                    <p>Please note that these calculations are for general guidance only. Accurate dimensional values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
-                    <button onclick="closeOverlay('vbelt-overlay')">OK</button>
-                </div>
-            </div>
+  <main class="tsb-calculator-widget" aria-labelledby="calculator-widget-title">
+    <header class="widget-header">
+      <h1 id="calculator-widget-title">Engineering Calculators</h1>
+      <p class="widget-description">
+        Quick reference calculators for belt length, pulley ratio, sprocket ratio, torque, and common unit conversions.
+      </p>
+      <div class="widget-disclaimer" id="calculator-disclaimer" role="note">
+        <div>
+          <strong>Disclaimer:</strong>
+          These calculators are for general guidance only. Accurate dimensions and application details are essential. Verify all results against manufacturer specifications, safety factors, and application requirements before use. Click OK to enable the calculators.
+        </div>
+        <button class="tsb-button disclaimer-button" type="button" id="calculator-disclaimer-ok">OK</button>
+      </div>
+    </header>
+
+    <fieldset id="calculatorControls" class="calculator-controls" disabled aria-describedby="calculator-disclaimer" aria-disabled="true">
+      <legend class="sr-only">Calculator inputs are disabled until the disclaimer is accepted.</legend>
+      <section class="calculator-grid" aria-label="Engineering calculator tools">
+      <article class="calculator-card" id="vbelt-calculator">
+        <div class="calculator-heading">
+          <span class="calculator-icon" aria-hidden="true">V</span>
+          <div>
             <h2>V-Belt Length Calculator</h2>
-            <label for="d1">Drive Pulley Diameter (Inches) (D1):</label>
-            <input type="number" id="d1" required>
-            <label for="d2">Driven Pulley Diameter (Inches) (D2):</label>
-            <input type="number" id="d2" required>
-            <label for="cd">Center Distance (distance from center of one pulley to the other):</label>
-            <input type="number" id="cd" required>
-            <label for="vbelt-result">Result</label>
-            <input type="text" id="vbelt-result" readonly>
-            <button onclick="calculateVbeltLength()">Calculate</button>
+            <p>Estimate approximate open-belt pitch length from pulley pitch diameters and center distance.</p>
+          </div>
         </div>
 
-        <!-- Pulley Size Calculator -->
-        <div class="calculator" id="pulley-calculator">
-            <div class="overlay" id="pulley-overlay">
-                <div class="overlay-content">
-                    <h2>Pulley Size Calculator</h2>
-                    <p>Please note that these calculations are for general guidance only. Accurate dimensional values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
-                    <button onclick="closeOverlay('pulley-overlay')">OK</button>
-                </div>
-            </div>
+        <div class="form-stack">
+          <label for="d1">Drive pulley pitch diameter <span class="unit-label">inches</span></label>
+          <input type="number" id="d1" inputmode="decimal" min="0" step="any" placeholder="Example: 4.5" autocomplete="off" />
+
+          <label for="d2">Driven pulley pitch diameter <span class="unit-label">inches</span></label>
+          <input type="number" id="d2" inputmode="decimal" min="0" step="any" placeholder="Example: 8" autocomplete="off" />
+
+          <label for="cd">Center distance <span class="unit-label">inches</span></label>
+          <input type="number" id="cd" inputmode="decimal" min="0" step="any" placeholder="Center to center" autocomplete="off" />
+
+          <button class="tsb-button" type="button" id="vbelt-calculate">Calculate</button>
+          <output class="result-box" id="vbelt-result" for="d1 d2 cd" aria-live="polite">Result will appear here.</output>
+          <p class="formula-note">Open-belt estimate using pitch diameters. Verify stock belt length and tensioning range.</p>
+          <p class="form-message" id="vbelt-message" aria-live="polite"></p>
+        </div>
+      </article>
+
+      <article class="calculator-card" id="pulley-calculator">
+        <div class="calculator-heading">
+          <span class="calculator-icon" aria-hidden="true">P</span>
+          <div>
             <h2>Pulley Size Calculator</h2>
-            <label for="drive-rpm">Drive Pulley RPM:</label>
-            <input type="number" id="drive-rpm" required>
-            <label for="output-rpm">Desired Output RPM:</label>
-            <input type="number" id="output-rpm" required>
-            <label for="drive-diameter">Drive Pulley Diameter (leave blank to calculate):</label>
-            <input type="number" id="drive-diameter">
-            <label for="driven-diameter">Driven Pulley Diameter (leave blank to calculate):</label>
-            <input type="number" id="driven-diameter">
-            <button onclick="calculatePulleySize()">Calculate</button>
+            <p>Calculate the missing pulley pitch diameter from RPM and one known pulley size.</p>
+          </div>
         </div>
 
-        <!-- Sprocket Size Calculator -->
-        <div class="calculator" id="sprocket-calculator">
-            <div class="overlay" id="sprocket-overlay">
-                <div class="overlay-content">
-                    <h2>Sprocket Size Calculator</h2>
-                    <p>Please note that these calculations are for general guidance only. Accurate dimensional values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
-                    <button onclick="closeOverlay('sprocket-overlay')">OK</button>
-                </div>
-            </div>
+        <div class="form-stack">
+          <label for="drive-rpm">Drive pulley RPM</label>
+          <input type="number" id="drive-rpm" inputmode="decimal" min="0" step="any" placeholder="Example: 1750" autocomplete="off" />
+
+          <label for="output-rpm">Desired output RPM</label>
+          <input type="number" id="output-rpm" inputmode="decimal" min="0" step="any" placeholder="Example: 875" autocomplete="off" />
+
+          <label for="drive-diameter">Drive pulley pitch diameter <span class="unit-label">leave blank to calculate</span></label>
+          <input type="number" id="drive-diameter" inputmode="decimal" min="0" step="any" placeholder="Known or blank" autocomplete="off" />
+
+          <label for="driven-diameter">Driven pulley pitch diameter <span class="unit-label">leave blank to calculate</span></label>
+          <input type="number" id="driven-diameter" inputmode="decimal" min="0" step="any" placeholder="Known or blank" autocomplete="off" />
+
+          <button class="tsb-button" type="button" id="pulley-calculate">Calculate</button>
+          <output class="result-box" id="pulley-result" for="drive-rpm output-rpm drive-diameter driven-diameter" aria-live="polite">Leave one diameter field blank.</output>
+          <p class="form-message" id="pulley-message" aria-live="polite"></p>
+        </div>
+      </article>
+
+      <article class="calculator-card" id="sprocket-calculator">
+        <div class="calculator-heading">
+          <span class="calculator-icon" aria-hidden="true">S</span>
+          <div>
             <h2>Sprocket Size Calculator</h2>
-            <label for="drive-sprocket-rpm">Drive Sprocket RPM:</label>
-            <input type="number" id="drive-sprocket-rpm" required>
-            <label for="output-sprocket-rpm">Desired Output RPM:</label>
-            <input type="number" id="output-sprocket-rpm" required>
-            <label for="drive-sprocket-teeth">Drive Sprocket Teeth (leave blank to calculate):</label>
-            <input type="number" id="drive-sprocket-teeth">
-            <label for="driven-sprocket-teeth">Driven Sprocket Teeth (leave blank to calculate):</label>
-            <input type="number" id="driven-sprocket-teeth">
-            <button onclick="calculateSprocketSize()">Calculate</button>
+            <p>Calculate the missing sprocket tooth count using RPM and one known sprocket.</p>
+          </div>
         </div>
-    </div>
 
-    <div class="calculators bottom-row">
-        <!-- Inches to Millimeters Converter -->
-        <div class="calculator" id="converter1">
-            <div class="overlay" id="converter1-overlay">
-                <div class="overlay-content">
-                    <h2>Inches to Millimeters Converter</h2>
-                    <p>Please note that these calculations are for general guidance only. Accurate values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
-                    <button onclick="closeOverlay('converter1-overlay')">OK</button>
-                </div>
-            </div>
+        <div class="form-stack">
+          <label for="drive-sprocket-rpm">Drive sprocket RPM</label>
+          <input type="number" id="drive-sprocket-rpm" inputmode="decimal" min="0" step="any" placeholder="Example: 120" autocomplete="off" />
+
+          <label for="output-sprocket-rpm">Desired output RPM</label>
+          <input type="number" id="output-sprocket-rpm" inputmode="decimal" min="0" step="any" placeholder="Example: 60" autocomplete="off" />
+
+          <label for="drive-sprocket-teeth">Drive sprocket teeth <span class="unit-label">leave blank to calculate</span></label>
+          <input type="number" id="drive-sprocket-teeth" inputmode="numeric" min="1" step="1" placeholder="Known or blank" autocomplete="off" />
+
+          <label for="driven-sprocket-teeth">Driven sprocket teeth <span class="unit-label">leave blank to calculate</span></label>
+          <input type="number" id="driven-sprocket-teeth" inputmode="numeric" min="1" step="1" placeholder="Known or blank" autocomplete="off" />
+
+          <button class="tsb-button" type="button" id="sprocket-calculate">Calculate</button>
+          <output class="result-box" id="sprocket-result" for="drive-sprocket-rpm output-sprocket-rpm drive-sprocket-teeth driven-sprocket-teeth" aria-live="polite">Leave one tooth-count field blank.</output>
+          <p class="formula-note">Tooth counts must be whole numbers. Results are rounded to the nearest whole tooth.</p>
+          <p class="form-message" id="sprocket-message" aria-live="polite"></p>
+        </div>
+      </article>
+
+      <article class="calculator-card" id="converter1">
+        <div class="calculator-heading">
+          <span class="calculator-icon" aria-hidden="true">IN</span>
+          <div>
             <h2>Inches to Millimeters Converter</h2>
-            <div class="unit-container">
-                <input type="text" id="inchValue" placeholder="Enter value">
-                <span>in</span>
-            </div>
-            <div class="unit-container">
-                <input type="text" id="mmValue" placeholder="Result">
-                <span>mm</span>
-            </div>
+            <p>Convert measurements between inches and millimeters.</p>
+          </div>
         </div>
-        
-        <!-- Newton Meters to Foot Pounds Converter -->
-        <div class="calculator" id="converter2">
-            <div class="overlay" id="converter2-overlay">
-                <div class="overlay-content">
-                    <h2>Newton Meters to Foot Pounds Converter</h2>
-                    <p>Please note that these calculations are for general guidance only. Accurate values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
-                    <button onclick="closeOverlay('converter2-overlay')">OK</button>
-                </div>
-            </div>
-            <h2>Newton Meters to Foot Pounds Converter</h2>
-            <div class="unit-container">
-                <input type="text" id="nmValue" placeholder="Enter value">
-                <span>Nm</span>
-            </div>
-            <div class="unit-container">
-                <input type="text" id="fpValue" placeholder="Enter value">
-                <span>ft-lbs</span>
-            </div>
-        </div>
-        
-        <!-- Torque Calculator -->
-        <div class="calculator" id="torqueCalculator">
-            <div class="overlay" id="torqueCalculator-overlay">
-                <div class="overlay-content">
-                    <h2>Torque Calculator</h2>
-                    <p>Please note that these calculations are for general guidance only. Accurate values are essential for reliable results. Tri-State Bearing is not responsible for any misuse of this information.</p>
-                    <button onclick="closeOverlay('torqueCalculator-overlay')">OK</button>
-                </div>
-            </div>
-            <h2>Torque Calculator</h2>
-            <div class="radio-container">
-                <label>
-                    Belt Drive
-                    <input type="radio" name="driveType" value="belt" checked>
-                </label>
-                <label>
-                    Chain Drive
-                    <input type="radio" name="driveType" value="chain">
-                </label>
-            </div>
-            <div class="unit-container">
-                <input type="text" id="loadTorque" placeholder="Load Torque (Nm)">
-            </div>
-            <div class="unit-container">
-                <input type="text" id="netTorque" placeholder="Net Torque (Nm)">
-            </div>
-        </div>
-    </div>
 
-    <script src="script.js"></script>
+        <div class="form-stack">
+          <label for="inchValue">Inches</label>
+          <div class="unit-row">
+            <input type="number" id="inchValue" inputmode="decimal" step="any" placeholder="Enter value" autocomplete="off" />
+            <span>in</span>
+          </div>
+
+          <label for="mmValue">Millimeters</label>
+          <div class="unit-row">
+            <input type="number" id="mmValue" inputmode="decimal" step="any" placeholder="Result" autocomplete="off" />
+            <span>mm</span>
+          </div>
+          <p class="form-message" id="inch-mm-message" aria-live="polite"></p>
+        </div>
+      </article>
+
+      <article class="calculator-card" id="converter2">
+        <div class="calculator-heading">
+          <span class="calculator-icon" aria-hidden="true">TQ</span>
+          <div>
+            <h2>Newton Meters to Foot-Pounds Converter</h2>
+            <p>Convert torque values between Nm and ft-lbs.</p>
+          </div>
+        </div>
+
+        <div class="form-stack">
+          <label for="nmValue">Newton meters</label>
+          <div class="unit-row">
+            <input type="number" id="nmValue" inputmode="decimal" step="any" placeholder="Enter value" autocomplete="off" />
+            <span>Nm</span>
+          </div>
+
+          <label for="fpValue">Foot-pounds</label>
+          <div class="unit-row">
+            <input type="number" id="fpValue" inputmode="decimal" step="any" placeholder="Result" autocomplete="off" />
+            <span>ft-lbs</span>
+          </div>
+          <p class="form-message" id="nm-ft-message" aria-live="polite"></p>
+        </div>
+      </article>
+
+      <article class="calculator-card" id="torqueCalculator">
+        <div class="calculator-heading">
+          <span class="calculator-icon" aria-hidden="true">HP</span>
+          <div>
+            <h2>Torque Calculator</h2>
+            <p>Calculate shaft torque from horsepower, RPM, and an optional service factor.</p>
+          </div>
+        </div>
+
+        <div class="form-stack">
+          <label for="torque-hp">Motor power <span class="unit-label">HP</span></label>
+          <input type="number" id="torque-hp" inputmode="decimal" min="0" step="any" placeholder="Example: 5" autocomplete="off" />
+
+          <label for="torque-rpm">Shaft speed <span class="unit-label">RPM</span></label>
+          <input type="number" id="torque-rpm" inputmode="decimal" min="0" step="any" placeholder="Example: 1750" autocomplete="off" />
+
+          <label for="torque-service-factor">Service factor <span class="unit-label">optional</span></label>
+          <input type="number" id="torque-service-factor" inputmode="decimal" min="0" step="any" value="1" placeholder="Example: 1.15" autocomplete="off" />
+
+          <button class="tsb-button" type="button" id="torque-calculate">Calculate</button>
+          <output class="result-box stacked-result" id="torque-result" for="torque-hp torque-rpm torque-service-factor" aria-live="polite">Enter horsepower and RPM.</output>
+          <p class="formula-note">Torque = (HP × 5252) ÷ RPM. Design torque = running torque × service factor.</p>
+          <p class="form-message" id="torque-message" aria-live="polite"></p>
+        </div>
+      </article>
+      </section>
+    </fieldset>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
