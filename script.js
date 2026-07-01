@@ -6,6 +6,8 @@
   const FT_LBS_TO_NM = 1.3558179483;
   const HP_TORQUE_CONSTANT = 5252.113122;
 
+  let disclaimerAccepted = false;
+
   function byId(id) {
     return document.getElementById(id);
   }
@@ -508,6 +510,162 @@
     setMessage("torque-message", "");
   }
 
+  function nudgeDisclaimer() {
+    const disclaimer = byId("calculator-disclaimer");
+    const okButton = byId("calculator-disclaimer-ok");
+
+    if (!disclaimer) return;
+
+    disclaimer.classList.remove("needs-attention");
+
+    // Force a reflow so repeated clicks restart the attention animation.
+    void disclaimer.offsetWidth;
+
+    disclaimer.classList.add("needs-attention");
+
+    window.setTimeout(() => {
+      disclaimer.classList.remove("needs-attention");
+    }, 850);
+
+    if (okButton && typeof okButton.focus === "function") {
+      okButton.focus({ preventScroll: true });
+    }
+
+    notifyCalculatorPanelChange();
+  }
+
+  function notifyCalculatorPanelChange() {
+    document.dispatchEvent(new CustomEvent("tsb-calculator-panel-change"));
+  }
+
+  function getCalculatorSelectorButtons() {
+    return Array.from(document.querySelectorAll("[data-calculator-target]"));
+  }
+
+  function getCalculatorPanels() {
+    return Array.from(document.querySelectorAll("[data-calculator-panel]"));
+  }
+
+  function activateCalculator(targetId, shouldFocusPanel) {
+    const controls = byId("calculatorControls");
+    const buttons = getCalculatorSelectorButtons();
+    const panels = getCalculatorPanels();
+    const activePanel = byId(targetId);
+
+    if (!activePanel) return;
+
+    if (controls) {
+      controls.classList.add("has-calculator-selected");
+    }
+
+    buttons.forEach((button) => {
+      const isActive = button.dataset.calculatorTarget === targetId;
+
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-expanded", isActive ? "true" : "false");
+    });
+
+    panels.forEach((panel) => {
+      const isActive = panel.id === targetId;
+
+      panel.classList.toggle("is-active", isActive);
+      panel.hidden = !isActive;
+    });
+
+    if (shouldFocusPanel && typeof activePanel.focus === "function") {
+      activePanel.focus({ preventScroll: true });
+    }
+
+    notifyCalculatorPanelChange();
+  }
+
+  function focusCalculatorSelection(currentButton, direction) {
+    const buttons = getCalculatorSelectorButtons();
+    const currentIndex = buttons.indexOf(currentButton);
+
+    if (currentIndex === -1 || buttons.length === 0) return null;
+
+    const nextIndex = (currentIndex + direction + buttons.length) % buttons.length;
+    const nextButton = buttons[nextIndex];
+
+    if (!nextButton) return null;
+
+    nextButton.focus({ preventScroll: true });
+    return nextButton;
+  }
+
+  function moveCalculatorSelection(currentButton, direction) {
+    const nextButton = focusCalculatorSelection(currentButton, direction);
+
+    if (!nextButton || !disclaimerAccepted) return;
+
+    activateCalculator(nextButton.dataset.calculatorTarget, false);
+  }
+
+  function bindCalculatorSelector() {
+    const buttons = getCalculatorSelectorButtons();
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!disclaimerAccepted) {
+          nudgeDisclaimer();
+          return;
+        }
+
+        activateCalculator(button.dataset.calculatorTarget, true);
+      });
+
+      button.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+          event.preventDefault();
+          moveCalculatorSelection(button, 1);
+        }
+
+        if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+          event.preventDefault();
+          moveCalculatorSelection(button, -1);
+        }
+
+        if (event.key === "Home") {
+          event.preventDefault();
+          const firstButton = buttons[0];
+
+          if (firstButton) {
+            firstButton.focus({ preventScroll: true });
+
+            if (disclaimerAccepted) {
+              activateCalculator(firstButton.dataset.calculatorTarget, false);
+            }
+          }
+        }
+
+        if (event.key === "End") {
+          event.preventDefault();
+          const lastButton = buttons[buttons.length - 1];
+
+          if (lastButton) {
+            lastButton.focus({ preventScroll: true });
+
+            if (disclaimerAccepted) {
+              activateCalculator(lastButton.dataset.calculatorTarget, false);
+            }
+          }
+        }
+      });
+    });
+
+    getCalculatorPanels().forEach((panel) => {
+      panel.classList.remove("is-active");
+      panel.hidden = true;
+    });
+
+    buttons.forEach((button) => {
+      button.classList.remove("is-active");
+      button.setAttribute("aria-expanded", "false");
+      button.tabIndex = 0;
+    });
+  }
+
   function bindDisclaimerConsent() {
     const controls = byId("calculatorControls");
     const okButton = byId("calculator-disclaimer-ok");
@@ -515,30 +673,39 @@
 
     if (!controls || !okButton) return;
 
-    controls.disabled = true;
+    disclaimerAccepted = false;
+    controls.classList.add("is-waiting-for-disclaimer");
     controls.setAttribute("aria-disabled", "true");
 
     okButton.addEventListener("click", () => {
-      controls.disabled = false;
-      controls.removeAttribute("disabled");
+      disclaimerAccepted = true;
+      controls.classList.remove("is-waiting-for-disclaimer");
       controls.setAttribute("aria-disabled", "false");
 
-      if (disclaimer) disclaimer.classList.add("is-accepted");
+      if (disclaimer) {
+        disclaimer.classList.remove("needs-attention");
+        disclaimer.classList.add("is-accepted");
+      }
 
       okButton.textContent = "Accepted";
       okButton.disabled = true;
       okButton.setAttribute("aria-disabled", "true");
 
-      const firstInput = controls.querySelector("input, button");
+      const firstFocusable = controls.querySelector(
+        ".calculator-select-button"
+      );
 
-      if (firstInput && typeof firstInput.focus === "function") {
-        firstInput.focus({ preventScroll: true });
+      if (firstFocusable && typeof firstFocusable.focus === "function") {
+        firstFocusable.focus({ preventScroll: true });
       }
+
+      notifyCalculatorPanelChange();
     });
   }
 
   function bindEvents() {
     bindDisclaimerConsent();
+    bindCalculatorSelector();
 
     const vbeltButton = byId("vbelt-calculate");
     const pulleyButton = byId("pulley-calculate");
@@ -692,6 +859,7 @@
   document.addEventListener("input", schedulePostHeight);
   document.addEventListener("change", schedulePostHeight);
   document.addEventListener("click", schedulePostHeight);
+  document.addEventListener("tsb-calculator-panel-change", schedulePostHeight);
 
   window.addEventListener("message", function (event) {
     if (!allowedParentOrigins.includes(event.origin)) return;
