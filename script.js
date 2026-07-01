@@ -1,158 +1,403 @@
-// Overlay handling function
-function closeOverlay(id) {
-    document.getElementById(id).style.display = 'none';
-}
+(function () {
+  "use strict";
 
-// V-Belt Length Calculator function
-function calculateVbeltLength() {
-  const d1 = parseFloat(document.getElementById('d1').value); // small pulley
-  const d2 = parseFloat(document.getElementById('d2').value); // large pulley
-  const C  = parseFloat(document.getElementById('cd').value); // center distance
-  const resultField = document.getElementById('vbelt-result');
+  const INCH_TO_MM = 25.4;
+  const NM_TO_FT_LBS = 0.7375621493;
+  const FT_LBS_TO_NM = 1.3558179483;
+  const HP_TORQUE_CONSTANT = 5252.113122;
 
-  if (d1 && d2 && C) {
-    // Standard V‐belt length formula:
-    const L = 
-      2 * C
-      + (Math.PI / 2) * (d1 + d2)
-      + Math.pow(d2 - d1, 2) / (4 * C);
-
-    resultField.value = L.toFixed(2);
-  } else {
-    resultField.value = 'Invalid input';
+  function byId(id) {
+    return document.getElementById(id);
   }
-}
 
-// Pulley Size Calculator function
-function calculatePulleySize() {
-    const driveRpm = parseFloat(document.getElementById('drive-rpm').value);
-    const outputRpm = parseFloat(document.getElementById('output-rpm').value);
-    const driveDiameter = parseFloat(document.getElementById('drive-diameter').value);
-    const drivenDiameter = parseFloat(document.getElementById('driven-diameter').value);
-    
-    if (driveRpm && outputRpm) {
-        if (!driveDiameter && drivenDiameter) {
-            document.getElementById('drive-diameter').value = ((outputRpm / driveRpm) * drivenDiameter).toFixed(2);
-        } else if (driveDiameter && !drivenDiameter) {
-            document.getElementById('driven-diameter').value = ((driveRpm / outputRpm) * driveDiameter).toFixed(2);
-        } else {
-            alert('Please leave one of the diameter fields blank for calculation.');
-        }
-    } else {
-        alert('Please enter valid RPM values.');
+  function getNumber(id) {
+    const field = byId(id);
+    if (!field) return NaN;
+    const value = parseFloat(field.value);
+    return Number.isFinite(value) ? value : NaN;
+  }
+
+  function hasValue(id) {
+    const field = byId(id);
+    return Boolean(field && field.value.trim() !== "");
+  }
+
+  function setValue(id, value) {
+    const field = byId(id);
+    if (field) field.value = value;
+  }
+
+  function setOutput(id, value) {
+    const output = byId(id);
+    if (output) output.textContent = value;
+  }
+
+  function setOutputHtml(id, value) {
+    const output = byId(id);
+    if (output) output.innerHTML = value;
+  }
+
+  function setMessage(id, message, type) {
+    const el = byId(id);
+    if (!el) return;
+    el.textContent = message || "";
+    el.classList.remove("is-error", "is-success", "is-warning");
+    if (type === "error") el.classList.add("is-error");
+    if (type === "success") el.classList.add("is-success");
+    if (type === "warning") el.classList.add("is-warning");
+  }
+
+  function round(value, decimals) {
+    const factor = Math.pow(10, decimals || 2);
+    return Math.round((value + Number.EPSILON) * factor) / factor;
+  }
+
+  function formatNumber(value, decimals) {
+    if (!Number.isFinite(value)) return "";
+    const places = decimals ?? 2;
+    return round(value, places).toFixed(places);
+  }
+
+  function isWholeNumber(value) {
+    return Number.isFinite(value) && Math.abs(value - Math.round(value)) < 1e-9;
+  }
+
+  function nearestWhole(value) {
+    if (!Number.isFinite(value)) return NaN;
+    return Math.max(1, Math.round(value));
+  }
+
+  function clearMessageAndOutput(messageId, outputId, outputText) {
+    setMessage(messageId, "");
+    if (outputId) setOutput(outputId, outputText || "Result will appear here.");
+  }
+
+  window.closeOverlay = function closeOverlay(id) {
+    const overlay = byId(id);
+    if (overlay) overlay.style.display = "none";
+  };
+
+  window.calculateVbeltLength = function calculateVbeltLength() {
+    const d1 = getNumber("d1");
+    const d2 = getNumber("d2");
+    const centerDistance = getNumber("cd");
+
+    if (d1 <= 0 || d2 <= 0 || centerDistance <= 0) {
+      setOutput("vbelt-result", "Result will appear here.");
+      setMessage("vbelt-message", "Enter positive values for both pulley pitch diameters and center distance.", "error");
+      return;
     }
-}
 
-// Sprocket Size Calculator function
-function calculateSprocketSize() {
-    const driveSprocketRpm = parseFloat(document.getElementById('drive-sprocket-rpm').value);
-    const outputSprocketRpm = parseFloat(document.getElementById('output-sprocket-rpm').value);
-    const driveSprocketTeeth = parseFloat(document.getElementById('drive-sprocket-teeth').value);
-    const drivenSprocketTeeth = parseFloat(document.getElementById('driven-sprocket-teeth').value);
-    
-    if (driveSprocketRpm && outputSprocketRpm) {
-        if (!driveSprocketTeeth && drivenSprocketTeeth) {
-            document.getElementById('drive-sprocket-teeth').value = ((outputSprocketRpm / driveSprocketRpm) * drivenSprocketTeeth).toFixed(2);
-        } else if (driveSprocketTeeth && !drivenSprocketTeeth) {
-            document.getElementById('driven-sprocket-teeth').value = ((driveSprocketRpm / outputSprocketRpm) * driveSprocketTeeth).toFixed(2);
-        } else {
-            alert('Please leave one of the teeth fields blank for calculation.');
-        }
-    } else {
-        alert('Please enter valid RPM values.');
+    const diameterDifference = Math.abs(d2 - d1);
+    if (centerDistance <= diameterDifference / 2) {
+      setOutput("vbelt-result", "Check dimensions.");
+      setMessage("vbelt-message", "Center distance must be greater than half the difference between the two pulley diameters.", "error");
+      return;
     }
-}
 
-// Inches to Millimeters Converter
-document.getElementById("inchValue").addEventListener("input", () => {
-    convertInchToMm(true);
-});
-document.getElementById("mmValue").addEventListener("input", () => {
-    convertInchToMm(false);
-});
+    const beltLength =
+      2 * centerDistance +
+      (Math.PI / 2) * (d1 + d2) +
+      Math.pow(d2 - d1, 2) / (4 * centerDistance);
 
-function convertInchToMm(isInch) {
-    let inchField = document.getElementById("inchValue");
-    let mmField = document.getElementById("mmValue");
-    let inch = parseFloat(inchField.value) || 0;
-    let mm = parseFloat(mmField.value) || 0;
+    const wrapAngleSmall = 180 - (2 * Math.asin(diameterDifference / (2 * centerDistance)) * 180) / Math.PI;
+
+    setOutput("vbelt-result", `Approx. open-belt length: ${formatNumber(beltLength, 2)} inches`);
+
+    if (wrapAngleSmall < 120) {
+      setMessage(
+        "vbelt-message",
+        `Small pulley wrap is approx. ${formatNumber(wrapAngleSmall, 1)}°. Consider increasing center distance or using an idler; verify with manufacturer data.`,
+        "warning"
+      );
+      return;
+    }
+
+    setMessage("vbelt-message", `Approximate open-belt pitch length calculated. Small pulley wrap is approx. ${formatNumber(wrapAngleSmall, 1)}°.`, "success");
+  };
+
+  window.calculatePulleySize = function calculatePulleySize() {
+    const driveRpm = getNumber("drive-rpm");
+    const outputRpm = getNumber("output-rpm");
+    const driveDiameter = getNumber("drive-diameter");
+    const drivenDiameter = getNumber("driven-diameter");
+    const driveDiameterEntered = hasValue("drive-diameter");
+    const drivenDiameterEntered = hasValue("driven-diameter");
+
+    if (driveRpm <= 0 || outputRpm <= 0) {
+      setOutput("pulley-result", "Leave one diameter field blank.");
+      setMessage("pulley-message", "Enter positive RPM values first.", "error");
+      return;
+    }
+
+    if (driveDiameterEntered === drivenDiameterEntered) {
+      setOutput("pulley-result", "Leave exactly one diameter field blank.");
+      setMessage("pulley-message", "Provide one known pulley diameter and leave the diameter to calculate blank.", "error");
+      return;
+    }
+
+    if (!driveDiameterEntered) {
+      if (drivenDiameter <= 0) {
+        setMessage("pulley-message", "Enter a positive driven pulley diameter.", "error");
+        return;
+      }
+      const calculatedDriveDiameter = (outputRpm / driveRpm) * drivenDiameter;
+      setValue("drive-diameter", formatNumber(calculatedDriveDiameter, 2));
+      const ratio = drivenDiameter / calculatedDriveDiameter;
+      setOutput("pulley-result", `Drive pulley diameter: ${formatNumber(calculatedDriveDiameter, 2)} inches`);
+      setMessage("pulley-message", `Assumes no slip. Diameter ratio is approx. ${formatNumber(ratio, 2)}:1.`, "success");
+      return;
+    }
+
+    if (driveDiameter <= 0) {
+      setMessage("pulley-message", "Enter a positive drive pulley diameter.", "error");
+      return;
+    }
+
+    const calculatedDrivenDiameter = (driveRpm / outputRpm) * driveDiameter;
+    setValue("driven-diameter", formatNumber(calculatedDrivenDiameter, 2));
+    const ratio = calculatedDrivenDiameter / driveDiameter;
+    setOutput("pulley-result", `Driven pulley diameter: ${formatNumber(calculatedDrivenDiameter, 2)} inches`);
+    setMessage("pulley-message", `Assumes no slip. Diameter ratio is approx. ${formatNumber(ratio, 2)}:1.`, "success");
+  };
+
+  window.calculateSprocketSize = function calculateSprocketSize() {
+    const driveRpm = getNumber("drive-sprocket-rpm");
+    const outputRpm = getNumber("output-sprocket-rpm");
+    const driveTeeth = getNumber("drive-sprocket-teeth");
+    const drivenTeeth = getNumber("driven-sprocket-teeth");
+    const driveTeethEntered = hasValue("drive-sprocket-teeth");
+    const drivenTeethEntered = hasValue("driven-sprocket-teeth");
+
+    if (driveRpm <= 0 || outputRpm <= 0) {
+      setOutput("sprocket-result", "Leave one tooth-count field blank.");
+      setMessage("sprocket-message", "Enter positive RPM values first.", "error");
+      return;
+    }
+
+    if (driveTeethEntered === drivenTeethEntered) {
+      setOutput("sprocket-result", "Leave exactly one tooth-count field blank.");
+      setMessage("sprocket-message", "Provide one known whole-number sprocket tooth count and leave the tooth count to calculate blank.", "error");
+      return;
+    }
+
+    if (!driveTeethEntered) {
+      if (drivenTeeth <= 0 || !isWholeNumber(drivenTeeth)) {
+        setMessage("sprocket-message", "Enter a positive whole-number driven sprocket tooth count.", "error");
+        return;
+      }
+      const exactDriveTeeth = (outputRpm / driveRpm) * drivenTeeth;
+      const roundedDriveTeeth = nearestWhole(exactDriveTeeth);
+      const estimatedOutputRpm = (driveRpm * roundedDriveTeeth) / drivenTeeth;
+      const messageType = isWholeNumber(exactDriveTeeth) ? "success" : "warning";
+
+      setValue("drive-sprocket-teeth", String(roundedDriveTeeth));
+      setOutput("sprocket-result", `Exact drive teeth: ${formatNumber(exactDriveTeeth, 2)}; nearest whole: ${roundedDriveTeeth}`);
+      setMessage("sprocket-message", `Nearest whole tooth count gives approx. ${formatNumber(estimatedOutputRpm, 2)} output RPM. Verify available sprockets and chain speed.`, messageType);
+      return;
+    }
+
+    if (driveTeeth <= 0 || !isWholeNumber(driveTeeth)) {
+      setMessage("sprocket-message", "Enter a positive whole-number drive sprocket tooth count.", "error");
+      return;
+    }
+
+    const exactDrivenTeeth = (driveRpm / outputRpm) * driveTeeth;
+    const roundedDrivenTeeth = nearestWhole(exactDrivenTeeth);
+    const estimatedOutputRpm = (driveRpm * driveTeeth) / roundedDrivenTeeth;
+    const messageType = isWholeNumber(exactDrivenTeeth) ? "success" : "warning";
+
+    setValue("driven-sprocket-teeth", String(roundedDrivenTeeth));
+    setOutput("sprocket-result", `Exact driven teeth: ${formatNumber(exactDrivenTeeth, 2)}; nearest whole: ${roundedDrivenTeeth}`);
+    setMessage("sprocket-message", `Nearest whole tooth count gives approx. ${formatNumber(estimatedOutputRpm, 2)} output RPM. Verify available sprockets and chain speed.`, messageType);
+  };
+
+  function convertInchToMm(isInch) {
+    const inchField = byId("inchValue");
+    const mmField = byId("mmValue");
+    if (!inchField || !mmField) return;
+
+    const inch = parseFloat(inchField.value);
+    const mm = parseFloat(mmField.value);
 
     if (isInch) {
-        if (inch) mmField.value = (inch * 25.4).toFixed(2);
-        else mmField.value = '';
-    } else {
-        if (mm) inchField.value = (mm / 25.4).toFixed(2);
-        else inchField.value = '';
+      if (inchField.value.trim() === "") {
+        mmField.value = "";
+        setMessage("inch-mm-message", "");
+        return;
+      }
+      if (!Number.isFinite(inch)) {
+        mmField.value = "";
+        setMessage("inch-mm-message", "Enter a valid inch value.", "error");
+        return;
+      }
+      mmField.value = formatNumber(inch * INCH_TO_MM, 2);
+      setMessage("inch-mm-message", `${inch} in = ${mmField.value} mm`, "success");
+      return;
     }
-}
 
-// Newton Meters to Foot Pounds Converter
-document.getElementById("nmValue").addEventListener("input", () => {
-    convertNmToFp(true);
-});
-document.getElementById("fpValue").addEventListener("input", () => {
-    convertNmToFp(false);
-});
+    if (mmField.value.trim() === "") {
+      inchField.value = "";
+      setMessage("inch-mm-message", "");
+      return;
+    }
+    if (!Number.isFinite(mm)) {
+      inchField.value = "";
+      setMessage("inch-mm-message", "Enter a valid millimeter value.", "error");
+      return;
+    }
+    inchField.value = formatNumber(mm / INCH_TO_MM, 4);
+    setMessage("inch-mm-message", `${mm} mm = ${inchField.value} in`, "success");
+  }
 
-function convertNmToFp(isNm) {
-    let nmField = document.getElementById("nmValue");
-    let fpField = document.getElementById("fpValue");
-    let nm = parseFloat(nmField.value) || 0;
-    let fp = parseFloat(fpField.value) || 0;
+  function convertNmToFp(isNm) {
+    const nmField = byId("nmValue");
+    const fpField = byId("fpValue");
+    if (!nmField || !fpField) return;
+
+    const nm = parseFloat(nmField.value);
+    const fp = parseFloat(fpField.value);
 
     if (isNm) {
-        if (nm) fpField.value = (nm * 0.73756).toFixed(2);
-        else fpField.value = '';
-    } else {
-        if (fp) nmField.value = (fp / 0.73756).toFixed(2);
-        else nmField.value = '';
+      if (nmField.value.trim() === "") {
+        fpField.value = "";
+        setMessage("nm-ft-message", "");
+        return;
+      }
+      if (!Number.isFinite(nm)) {
+        fpField.value = "";
+        setMessage("nm-ft-message", "Enter a valid Newton meter value.", "error");
+        return;
+      }
+      fpField.value = formatNumber(nm * NM_TO_FT_LBS, 2);
+      setMessage("nm-ft-message", `${nm} Nm = ${fpField.value} ft-lbs`, "success");
+      return;
     }
-}
 
-// Torque Calculator
-document.querySelectorAll('input[name="driveType"]').forEach((elem) => {
-    elem.addEventListener("change", resetTorqueCalculator);
-});
-document.getElementById("loadTorque").addEventListener("input", calculateTorque);
-document.getElementById("netTorque").addEventListener("input", calculateTorqueReverse);
-
-function resetTorqueCalculator() {
-    document.getElementById("loadTorque").value = '';
-    document.getElementById("netTorque").value = '';
-}
-
-function calculateTorque() {
-    let loadTorque = parseFloat(document.getElementById("loadTorque").value) || 0;
-    let netTorqueField = document.getElementById("netTorque");
-    let driveType = document.querySelector('input[name="driveType"]:checked').value;
-
-    if (loadTorque) {
-        let netTorque;
-        if (driveType === "belt") {
-            netTorque = loadTorque * 1.1; // Example calculation for belt
-        } else {
-            netTorque = loadTorque * 1.2; // Example calculation for chain
-        }
-        netTorqueField.value = netTorque.toFixed(2);
-    } else {
-        netTorqueField.value = '';
+    if (fpField.value.trim() === "") {
+      nmField.value = "";
+      setMessage("nm-ft-message", "");
+      return;
     }
-}
-
-function calculateTorqueReverse() {
-    let netTorque = parseFloat(document.getElementById("netTorque").value) || 0;
-    let loadTorqueField = document.getElementById("loadTorque");
-    let driveType = document.querySelector('input[name="driveType"]:checked').value;
-
-    if (netTorque) {
-        let loadTorque;
-        if (driveType === "belt") {
-            loadTorque = netTorque / 1.1; // Example reverse calculation for belt
-        } else {
-            loadTorque = netTorque / 1.2; // Example reverse calculation for chain
-        }
-        loadTorqueField.value = loadTorque.toFixed(2);
-    } else {
-        loadTorqueField.value = '';
+    if (!Number.isFinite(fp)) {
+      nmField.value = "";
+      setMessage("nm-ft-message", "Enter a valid foot-pound value.", "error");
+      return;
     }
-}
+    nmField.value = formatNumber(fp / NM_TO_FT_LBS, 2);
+    setMessage("nm-ft-message", `${fp} ft-lbs = ${nmField.value} Nm`, "success");
+  }
+
+  window.calculateTorque = function calculateTorque() {
+    const hp = getNumber("torque-hp");
+    const rpm = getNumber("torque-rpm");
+    const serviceFactorRaw = getNumber("torque-service-factor");
+    const serviceFactor = hasValue("torque-service-factor") ? serviceFactorRaw : 1;
+
+    if (hp <= 0 || rpm <= 0) {
+      setOutput("torque-result", "Enter horsepower and RPM.");
+      setMessage("torque-message", "Enter positive horsepower and RPM values.", "error");
+      return;
+    }
+
+    if (!Number.isFinite(serviceFactor) || serviceFactor <= 0) {
+      setOutput("torque-result", "Check service factor.");
+      setMessage("torque-message", "Service factor must be a positive value. Use 1 if no service factor is needed.", "error");
+      return;
+    }
+
+    const runningTorqueFtLbs = (hp * HP_TORQUE_CONSTANT) / rpm;
+    const runningTorqueNm = runningTorqueFtLbs * FT_LBS_TO_NM;
+    const designTorqueFtLbs = runningTorqueFtLbs * serviceFactor;
+    const designTorqueNm = runningTorqueNm * serviceFactor;
+
+    const resultHtml = [
+      `<strong>Running torque:</strong> ${formatNumber(runningTorqueFtLbs, 2)} ft-lbs (${formatNumber(runningTorqueNm, 2)} Nm)`,
+      `<strong>Design torque:</strong> ${formatNumber(designTorqueFtLbs, 2)} ft-lbs (${formatNumber(designTorqueNm, 2)} Nm)`
+    ].join("<br>");
+
+    setOutputHtml("torque-result", resultHtml);
+    setMessage("torque-message", serviceFactor === 1 ? "Torque calculated from horsepower and RPM." : `Torque calculated with a ${formatNumber(serviceFactor, 2)} service factor.`, "success");
+  };
+
+  function clearTorque() {
+    setOutput("torque-result", "Enter horsepower and RPM.");
+    setMessage("torque-message", "");
+  }
+
+  function bindDisclaimerConsent() {
+    const controls = byId("calculatorControls");
+    const okButton = byId("calculator-disclaimer-ok");
+    const disclaimer = byId("calculator-disclaimer");
+
+    if (!controls || !okButton) return;
+
+    controls.disabled = true;
+    controls.setAttribute("aria-disabled", "true");
+
+    okButton.addEventListener("click", () => {
+      controls.disabled = false;
+      controls.removeAttribute("disabled");
+      controls.setAttribute("aria-disabled", "false");
+
+      if (disclaimer) disclaimer.classList.add("is-accepted");
+      okButton.textContent = "Accepted";
+      okButton.disabled = true;
+      okButton.setAttribute("aria-disabled", "true");
+
+      const firstInput = controls.querySelector("input, button");
+      if (firstInput && typeof firstInput.focus === "function") {
+        firstInput.focus({ preventScroll: true });
+      }
+    });
+  }
+
+  function bindEvents() {
+    bindDisclaimerConsent();
+    const vbeltButton = byId("vbelt-calculate");
+    const pulleyButton = byId("pulley-calculate");
+    const sprocketButton = byId("sprocket-calculate");
+    const torqueButton = byId("torque-calculate");
+
+    if (vbeltButton) vbeltButton.addEventListener("click", window.calculateVbeltLength);
+    if (pulleyButton) pulleyButton.addEventListener("click", window.calculatePulleySize);
+    if (sprocketButton) sprocketButton.addEventListener("click", window.calculateSprocketSize);
+    if (torqueButton) torqueButton.addEventListener("click", window.calculateTorque);
+
+    ["d1", "d2", "cd"].forEach((id) => {
+      const field = byId(id);
+      if (field) field.addEventListener("input", () => clearMessageAndOutput("vbelt-message", "vbelt-result"));
+    });
+
+    ["drive-rpm", "output-rpm", "drive-diameter", "driven-diameter"].forEach((id) => {
+      const field = byId(id);
+      if (field) field.addEventListener("input", () => clearMessageAndOutput("pulley-message", "pulley-result", "Leave one diameter field blank."));
+    });
+
+    ["drive-sprocket-rpm", "output-sprocket-rpm", "drive-sprocket-teeth", "driven-sprocket-teeth"].forEach((id) => {
+      const field = byId(id);
+      if (field) field.addEventListener("input", () => clearMessageAndOutput("sprocket-message", "sprocket-result", "Leave one tooth-count field blank."));
+    });
+
+    const inchField = byId("inchValue");
+    const mmField = byId("mmValue");
+    if (inchField) inchField.addEventListener("input", () => convertInchToMm(true));
+    if (mmField) mmField.addEventListener("input", () => convertInchToMm(false));
+
+    const nmField = byId("nmValue");
+    const fpField = byId("fpValue");
+    if (nmField) nmField.addEventListener("input", () => convertNmToFp(true));
+    if (fpField) fpField.addEventListener("input", () => convertNmToFp(false));
+
+    ["torque-hp", "torque-rpm", "torque-service-factor"].forEach((id) => {
+      const field = byId(id);
+      if (field) field.addEventListener("input", clearTorque);
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bindEvents);
+  } else {
+    bindEvents();
+  }
+})();
